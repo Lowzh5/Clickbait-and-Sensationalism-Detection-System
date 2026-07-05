@@ -2,7 +2,7 @@ import os #file path operations (joining paths, getting directory names)
 import pandas as pd
 import re #regular expressions
 from sklearn.feature_extraction.text import TfidfVectorizer #implement TF-IDF 
-from sklearn.model_selection import train_test_split # split the dataset to training and testing (80/20)
+from sklearn.model_selection import train_test_split # split the dataset to 80% training and 20% testing
 import joblib # store the tfidf_vectorizer.pkl
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # find the project root(not strictly necessary but just to avoid headaches)
@@ -27,23 +27,20 @@ def load_dataset(csv_path=None):
     print(df.duplicated().sum())
 
     print("\nLabel distribution:")
-    print(df["clickbait"].value_counts())
+    print(df["clickbait"].value_counts()) # count the total number of clickbait/non-clickbait
 
     return df
 
 def clean_text(text):
     text = str(text).lower() # convert to str then lowercases everything
-    text = text.replace("'","")
-    text = re.sub(r"[^a-zA-Z0-9\s]", " ", text) # remove all special character, replace those with a space
+    text = text.replace("'","") # for the contraction purpose " ' "
+    # re.sub(pattern[for those not in this pattern], repl, string)
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text) # remove all special character, replace those with a space
     text = re.sub(r"\s+", " ", text).strip() # collapses multiple spaces into a single sapce, strip removes leading/trainling spaces
     return text
 
-
 def clean_dataset(df):
     df = df[["headline", "clickbait"]].copy() #create a separate copy to avoid accidentally modify the original DataFrame
-
-    df = df.dropna() #remove rows with missing values(e.g. if a headline is empty) --> may remove this one since the dataset is perfect
-    df = df.drop_duplicates() #remove this also 
 
     #apply the clean text to each headline and store it to a new column call cleaned_headline
     df["cleaned_headline"] = df["headline"].apply(clean_text)
@@ -58,12 +55,12 @@ def tfidf(df):
     y = df["clickbait"]
 
     # seperate the train/test(80/20)
-    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42) #random_state = ensure each time is using '42' style to split the data
     
     # build TF-IDF vectorizer
     vectorizer = TfidfVectorizer(ngram_range=(1,2)) # if the performance is quite slow then add the max_features
     X_train_tfidf = vectorizer.fit_transform(X_train) #fit_transfrom is learn + change
-    X_test_tfidf = vectorizer.transform(X_test)
+    X_test_tfidf = vectorizer.transform(X_test) # 从vectorizer里面拿X_train的词典来train
 
     # save vectorizer
     vectorizer_path = os.path.join(BASE_DIR,"models","tfidf_vectorizer.pkl")
