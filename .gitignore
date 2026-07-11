@@ -30,14 +30,3 @@ desktop.ini
 .env
 .env.local
 
-# Trained models (large binary files)
-models/*.pkl
-
-# Data files (large datasets)
-data/raw/*.csv
-data/processed/*.csv
-
-# Reports (generated files)
-reports/*.png
-reports/*.jpg
-reports/*.pdf
