@@ -5,3 +5,4 @@
 
 3. Install the `Scikit-learn` library -> `pip install -U scikit-learn`
 
+3. install the `streamlit` library -> `pip install streamlit`
