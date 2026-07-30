@@ -1,0 +1,37 @@
+import os
+import joblib
+from shared_pipeline import BASE_DIR, clean_text
+from utils import assign_severity, get_influential_words, format_results
+
+Model_PATH = os.path.join(BASE_DIR, "models", "naive_bayes.pkl")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "tfidf_vectorizer.pkl")
+
+# Load model and vectorizer
+model = joblib.load(Model_PATH)
+vectorizer = joblib.load(VECTORIZER_PATH)
+
+def predict_naive_bayes(headline):
+
+    # Clean headline
+    cleaned = clean_text(headline)
+
+    # Transform into TFIDF features
+    text_vector = vectorizer.transform([cleaned])
+
+    # Prediction
+    prob = model.predict_proba(text_vector)[0]
+    clickbait_prob = prob[1]
+    clickbait_score = int(round(clickbait_prob * 100))
+
+    prediction = "Clickbait" if clickbait_score > 50 else "Not Clickbait"
+    severity = assign_severity(clickbait_score)
+
+    # Extract influential words
+    influential_words = get_influential_words(model, vectorizer, text_vector)
+
+    return format_results("Naive Bayes", prediction, clickbait_score, severity, influential_words)
+
+if __name__ == "__main__":
+    sample_headline = "You Won't Believe This Shocking Secret!"
+    result = predict_naive_bayes(sample_headline)
+    print(result)
