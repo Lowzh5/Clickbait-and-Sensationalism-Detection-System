@@ -30,3 +30,5 @@ desktop.ini
 .env
 .env.local
 
+# train data
+models/*.pkl
