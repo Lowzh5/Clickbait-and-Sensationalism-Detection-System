@@ -22,6 +22,8 @@ def get_influential_words(model, vectorizer, text_vector, top_n=5):
     text_vector is the TF-IDF vector (1 row) for a single headline.
     Contribution of each word = tfidf value of that word * model weight for that word.
     We only keep words that are actually present in the headline (non-zero TF-IDF).
+    Returns (words, scores) - scores can be negative (word pushed away from
+    Clickbait) as well as positive, both are kept so callers can visualize direction.
     """
     # Obtain the vocabulary list to understand which word corresponds to each column in the matrix.
     feature_names = np.array(vectorizer.get_feature_names_out())
@@ -50,18 +52,22 @@ def get_influential_words(model, vectorizer, text_vector, top_n=5):
     # 贡献度 = tfidf值 × 模型权重
     contributions = tfidf_values[present_idx] * weights[present_idx]
 
-    # sort words by how strongly (positively) they push towards clickbait
-    ranked_idx = present_idx[np.argsort(contributions)[::-1]]
+    # sort words (and their scores, same order) by how strongly they push towards clickbait
+    order = np.argsort(contributions)[::-1]
+    ranked_idx = present_idx[order]
+    sorted_contributions = contributions[order]
 
     top_words = feature_names[ranked_idx[:top_n]].tolist()
-    return top_words
+    top_scores = sorted_contributions[:top_n].tolist()
+    return top_words, top_scores
 
 
-def format_result(model_name, prediction, score, severity, words):
+def format_result(model_name, prediction, score, severity, words, word_scores):
     return {
         "model_name": model_name,
         "prediction": prediction,
         "clickbait_score": score,
         "severity": severity,
         "influential_words": words,
+        "influential_word_scores": word_scores,
     }

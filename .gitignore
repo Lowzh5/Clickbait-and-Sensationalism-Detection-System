@@ -32,3 +32,6 @@ desktop.ini
 
 # train data
 models/*.pkl
+
+# ablation study
+exploration/*.csv

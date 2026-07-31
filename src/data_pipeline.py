@@ -58,7 +58,7 @@ def tfidf(df):
     X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42) #random_state = ensure each time is using '42' style to split the data
     
     # build TF-IDF vectorizer
-    vectorizer = TfidfVectorizer(ngram_range=(1,2)) # if the performance is quite slow then add the max_features
+    vectorizer = TfidfVectorizer(ngram_range=(1,2),max_features=50000)
     X_train_tfidf = vectorizer.fit_transform(X_train) #fit_transfrom is learn + change
     X_test_tfidf = vectorizer.transform(X_test) # 从vectorizer里面拿X_train的词典来train
 
