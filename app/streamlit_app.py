@@ -1,22 +1,9 @@
-"""
-Clickbait Detection System - Streamlit UI
-
-Pipeline: user headline -> text cleaning -> TF-IDF vectorizer -> trained model -> prediction
-
-How to run:
-    streamlit run app/streamlit_app.py
-
-How to add a new model later:
-    1. Implement predict_<model>(headline) in src/predict_<model>.py so it returns
-       the same dict shape as predict_svm() (see format_result in src/inference_utils.py).
-    2. Import it below (next to the other predict_* imports).
-    3. In MODEL_REGISTRY, set "available": True and "predict_fn": predict_<model>.
-    That's it - the rest of the UI (selection, validation, result cards) needs no changes.
-"""
-
 import os
+import re
 import sys
 
+import altair as alt
+import pandas as pd
 import streamlit as st
 
 # --- make src/ importable -----------------------------------------------
@@ -83,32 +70,6 @@ st.write(
     "whether it is **Clickbait** or **Not Clickbait**, along with a score, "
     "severity level, and the words that most influenced the decision."
 )
-
-
-# --- sidebar: project info, model status, pipeline summary --------------
-with st.sidebar:
-    st.header("ℹ️ Project Info")
-    st.markdown(
-        "- **Task:** Clickbait headline detection\n"
-        "- **Language scope:** English headlines only\n"
-        "- **Approach:** Classic NLP (TF-IDF + linear classifiers)"
-    )
-
-    st.header("📊 Model Status")
-    for name, info in MODEL_REGISTRY.items():
-        icon = "✅" if info["available"] else "🚧"
-        st.markdown(f"{icon} **{name}** — {info['status_note']}")
-
-    st.header("🔧 Pipeline Summary")
-    st.markdown(
-        "1. Raw headline input\n"
-        "2. Text cleaning (lowercase, strip special characters)\n"
-        "3. TF-IDF vectorization (`tfidf_vectorizer.pkl`)\n"
-        "4. Trained model prediction (e.g. `svm.pkl`)\n"
-        "5. Score, severity & explanation output"
-    )
-
-
 # --- input section --------------------------------------------------------
 st.subheader("1. Enter a Headline")
 
@@ -154,15 +115,78 @@ st.subheader("3. Analyze")
 analyze_clicked = st.button("🔍 Analyze Headline", type="primary")
 
 
-def display_result(result: dict, model_name: str) -> None:
+def highlight_headline(headline: str, words: list[str]) -> str:
+    """Return the original headline with each influential word/phrase wrapped
+    in markdown highlighting, matched case-insensitively against the raw text.
+
+    clean_text() (data_pipeline.py) lowercases the headline and deletes
+    apostrophes without inserting a space (e.g. "Won't" -> "wont"), so the
+    words returned by get_influential_words() no longer look like substrings
+    of the original headline. To find them again, each character is joined
+    with an optional apostrophe so "wont" can match "won't" in the raw text.
+    """
+    if not words:
+        return headline
+
+    def word_to_pattern(word: str) -> str:
+        sub_patterns = ["'?".join(re.escape(ch) for ch in part) for part in word.split(" ")]
+        return r"\s+".join(sub_patterns)
+
+    # longest phrases first so a bigram match isn't shadowed by its own unigram
+    sorted_words = sorted(set(words), key=len, reverse=True)
+    combined_pattern = "|".join(f"({word_to_pattern(w)})" for w in sorted_words)
+
+    return re.sub(
+        combined_pattern,
+        lambda m: f":orange[**{m.group(0)}**]",
+        headline,
+        flags=re.IGNORECASE,
+    )
+
+
+def build_contribution_chart(words: list[str], scores: list[float], compact: bool = False) -> alt.Chart:
+    """Horizontal bar chart of each influential word's contribution score.
+    Positive = pushed the prediction towards Clickbait, negative = away from it.
+    `compact` drops the legend/axis title for the narrow All-Models columns.
+    """
+    df = pd.DataFrame({"word": words, "contribution": scores})
+    df["direction"] = df["contribution"].apply(
+        lambda v: "Toward Clickbait" if v >= 0 else "Away from Clickbait"
+    )
+
+    return (
+        alt.Chart(df)
+        .mark_bar()
+        .encode(
+            x=alt.X("contribution:Q", title=None if compact else "Contribution to prediction"),
+            y=alt.Y("word:N", sort="-x", title=None),
+            color=alt.Color(
+                "direction:N",
+                scale=alt.Scale(
+                    domain=["Toward Clickbait", "Away from Clickbait"],
+                    range=["#2a78d6", "#eb6834"],
+                ),
+                legend=None if compact else alt.Legend(title=None, orient="bottom"),
+            ),
+            tooltip=[
+                alt.Tooltip("word:N", title="Word"),
+                alt.Tooltip("contribution:Q", title="Contribution", format=".4f"),
+            ],
+        )
+        .properties(height=alt.Step(22 if compact else 28))
+    )
+
+
+def display_result(result: dict, model_name: str, headline: str) -> None:
     """Render the prediction result as cards. `result` follows the shape
     produced by utils.format_result(): model_name, prediction, clickbait_score,
-    severity, influential_words.
+    severity, influential_words, influential_word_scores.
     """
     prediction = result["prediction"]
     score = result["clickbait_score"]
     severity = result["severity"]
     words = result["influential_words"]
+    word_scores = result["influential_word_scores"]
 
     severity_color = {"Low": "green", "Medium": "orange", "High": "red"}.get(severity, "gray")
     prediction_icon = "🚩" if prediction == "Clickbait" else "✅"
@@ -182,9 +206,8 @@ def display_result(result: dict, model_name: str) -> None:
 
     st.markdown("**Model-based Explanation**")
     if words:
-        st.markdown(
-            " ".join(f":blue-badge[{w}]" for w in words)
-        )
+        st.markdown(highlight_headline(headline, words))
+        st.altair_chart(build_contribution_chart(words, word_scores), use_container_width=True)
     else:
         st.caption("No influential words were found in this headline.")
 
@@ -196,7 +219,7 @@ def display_result(result: dict, model_name: str) -> None:
     )
 
 
-def display_all_models_result(results: list[dict]) -> None:
+def display_all_models_result(results: list[dict], headline: str) -> None:
     """Render one compact card per model, side by side, for the "All Models" option."""
     severity_color = {"Low": "green", "Medium": "orange", "High": "red"}
 
@@ -210,6 +233,7 @@ def display_all_models_result(results: list[dict]) -> None:
             score = result["clickbait_score"]
             severity = result["severity"]
             words = result["influential_words"]
+            word_scores = result["influential_word_scores"]
             prediction_icon = "🚩" if prediction == "Clickbait" else "✅"
 
             st.markdown(f"**{result['model_name']}**")
@@ -220,7 +244,8 @@ def display_all_models_result(results: list[dict]) -> None:
 
             st.caption("Influential words:")
             if words:
-                st.markdown(" ".join(f":blue-badge[{w}]" for w in words))
+                st.markdown(highlight_headline(headline, words))
+                st.altair_chart(build_contribution_chart(words, word_scores, compact=True), use_container_width=True)
             else:
                 st.caption("None found.")
 
@@ -245,27 +270,9 @@ if analyze_clicked:
     elif selected_model == "All Models":
         with st.spinner("Analyzing headline with all models..."):
             results = [MODEL_REGISTRY[name]["predict_fn"](headline) for name in ALL_MODEL_NAMES]
-        display_all_models_result(results)
+        display_all_models_result(results, headline)
     else:
         predict_fn = MODEL_REGISTRY[selected_model]["predict_fn"]
         with st.spinner(f"Analyzing headline with {selected_model}..."):
             result = predict_fn(headline)
-        display_result(result, selected_model)
-
-
-# --- model comparison placeholder ---------------------------------------
-st.divider()
-st.subheader("📈 Model Comparison (Coming Soon)")
-st.caption("Once all models are trained, this table will compare their performance.")
-
-comparison_rows = [
-    {
-        "Model": name,
-        "Status": "Available" if info["available"] else "Pending",
-        "Accuracy": "—",
-        "F1-score": "—",
-    }
-    for name, info in MODEL_REGISTRY.items()
-    if name != "All Models"
-]
-st.table(comparison_rows)
+        display_result(result, selected_model, headline)

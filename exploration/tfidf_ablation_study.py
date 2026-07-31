@@ -8,6 +8,7 @@ Fits everything in-memory - does NOT touch models/*.pkl, so it never
 overwrites the vectorizer/models used by predict_*.py and the Streamlit app.
 """
 import os
+import sys
 import csv
 import itertools
 
@@ -16,6 +17,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
+
+# data_pipeline.py / evaluation.py live in src/, not under the exploration folder
+SRC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
+if SRC_DIR not in sys.path:
+    sys.path.append(SRC_DIR)
 
 from data_pipeline import BASE_DIR, load_dataset, clean_dataset
 from evaluation import evaluate_model
@@ -26,14 +32,12 @@ MAX_FEATURES_OPTIONS = [None, 50000, 100000]
 
 OUTPUT_PATH = os.path.join(BASE_DIR, "exploration", "ablation_results.csv")
 
-
 def build_models():
     return {
         "Naive Bayes": MultinomialNB(alpha=0.1),
         "Logistic Regression": LogisticRegression(C=1.0, max_iter=1000, random_state=42),
         "SVM": LinearSVC(C=1.0, random_state=42),
     }
-
 
 if __name__ == "__main__":
     df = load_dataset()
@@ -64,14 +68,14 @@ if __name__ == "__main__":
             metrics = evaluate_model(y_test, y_pred, model_name=model_name)
 
             rows.append({
-                "ngram_range": f"{ngram_range[0]}-{ngram_range[1]}",
+                "ngram_range": f"{ngram_range[0]} to {ngram_range[1]}",
                 "stop_words": "enabled" if stop_words else "disabled",
                 "max_features": max_features if max_features else "None",
                 "model": model_name,
-                "accuracy": metrics["accuracy"],
-                "precision": metrics["precision"],
-                "recall": metrics["recall"],
-                "f1": metrics["f1"],
+                "accuracy": round(metrics["accuracy"], 4),
+                "precision": round(metrics["precision"], 4),
+                "recall": round(metrics["recall"], 4),
+                "f1": round(metrics["f1"], 4),
             })
 
     with open(OUTPUT_PATH, "w", newline="", encoding="utf-8") as f:
