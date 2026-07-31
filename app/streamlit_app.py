@@ -29,6 +29,7 @@ if SRC_DIR not in sys.path:
 
 from predict_svm import predict_svm  # noqa: E402
 from predict_logistic_regression import predict_logistic_regression  # noqa: E402
+from predict_naive_bayes import predict_naive_bayes
 
 # Not ready yet - uncomment once implemented and trained:
 # from predict_naive_bayes import predict_naive_bayes
@@ -45,9 +46,9 @@ MODEL_REGISTRY = {
         "status_note": "Trained and ready.",
     },
     "Naive Bayes": {
-        "available": False,
-        "predict_fn": None,
-        "status_note": "Coming soon - model not trained yet.",
+        "available": True,
+        "predict_fn": predict_naive_bayes,
+        "status_note": "Trained and ready.",
     },
     "Logistic Regression": {
         "available": True,
