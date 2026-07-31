@@ -1,8 +1,8 @@
 import os
 import math
 import joblib
-from shared_pipeline import BASE_DIR, clean_text
-from utils import assign_severity, get_influential_words, format_result
+from data_pipeline import BASE_DIR, clean_text
+from inference_utils import assign_severity, get_influential_words, format_result
 
 MODEL_PATH = os.path.join(BASE_DIR, "models", "svm.pkl")
 VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "tfidf_vectorizer.pkl")

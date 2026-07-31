@@ -1,8 +1,8 @@
 import os
 import joblib
 from sklearn.naive_bayes import MultinomialNB
-from shared_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
-from utils import evaluate_model
+from data_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
+from evaluation import evaluate_model
 
 if __name__ == "__main__":
 
