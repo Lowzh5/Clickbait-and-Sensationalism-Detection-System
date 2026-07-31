@@ -8,7 +8,7 @@ How to run:
 
 How to add a new model later (e.g. once Naive Bayes is trained):
     1. Implement predict_naive_bayes(headline) in src/predict_naive_bayes.py so it
-       returns the same dict shape as predict_svm() (see format_result in src/utils.py).
+       returns the same dict shape as predict_svm() (see format_result in src/inference_utils.py).
     2. Import it below (next to the predict_svm import).
     3. In MODEL_REGISTRY, set "available": True and "predict_fn": predict_naive_bayes.
     That's it - the rest of the UI (selection, validation, result cards) needs no changes.
@@ -20,7 +20,7 @@ import sys
 import streamlit as st
 
 # --- make src/ importable -----------------------------------------------
-# src modules use flat imports (e.g. "from shared_pipeline import ..."),
+# src modules use flat imports (e.g. "from data_pipeline import ..."),
 # so src/ itself needs to be on sys.path rather than imported as a package.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(BASE_DIR, "src")

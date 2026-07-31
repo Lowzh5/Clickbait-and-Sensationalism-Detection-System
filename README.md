@@ -74,16 +74,15 @@ Clickbait-detection-system/
 │   └── processed/                    # Cleaned dataset
 │
 ├── src/
-│   ├── shared_pipeline.py            # Dataset loading, cleaning, TF-IDF, train/test split
-│   ├── preprocessing.py              # Text cleaning functions
+│   ├── data_pipeline.py              # Dataset loading, cleaning, TF-IDF, train/test split
 │   ├── train_naive_bayes.py          # Train Naive Bayes model
 │   ├── train_logistic_regression.py  # Train Logistic Regression model
 │   ├── train_svm.py                  # Train SVM model
 │   ├── predict_naive_bayes.py        # Predict using Naive Bayes
 │   ├── predict_logistic_regression.py# Predict using Logistic Regression
 │   ├── predict_svm.py                # Predict using SVM
-│   ├── evaluate_models.py            # Shared evaluation functions
-│   └── utils.py                      # Shared utility functions
+│   ├── evaluation.py                 # Shared evaluation function (accuracy/precision/recall/F1/confusion matrix)
+│   └── inference_utils.py            # Shared inference-time helpers (severity, influential words, result formatting)
 │
 ├── app/
 │   └── streamlit_app.py              # Streamlit web application
@@ -113,16 +112,15 @@ Clickbait-detection-system/
 
 | File | Description |
 |------|-------------|
-| `shared_pipeline.py` | Shared data pipeline: load dataset, clean text, TF-IDF vectorization, train/test split. All models use the same pipeline. |
-| `preprocessing.py` | Text cleaning functions: lowercase, remove punctuation, remove special characters, remove extra spaces. |
+| `data_pipeline.py` | Shared data pipeline: load dataset, clean text, TF-IDF vectorization, train/test split. All models use the same pipeline. |
 | `train_naive_bayes.py` | Train Naive Bayes model using shared TF-IDF features. Save as `naive_bayes.pkl`. |
 | `train_logistic_regression.py` | Train Logistic Regression model using shared TF-IDF features. Save as `logistic_regression.pkl`. |
 | `train_svm.py` | Train SVM (LinearSVC) model using shared TF-IDF features. Save as `svm.pkl`. |
 | `predict_naive_bayes.py` | Predict function for Naive Bayes. Returns standard output format. |
 | `predict_logistic_regression.py` | Predict function for Logistic Regression. Returns standard output format. |
 | `predict_svm.py` | Predict function for SVM. Returns standard output format. |
-| `evaluate_models.py` | Shared evaluation function: Accuracy, Precision, Recall, F1-score, confusion matrix. Model comparison table. |
-| `utils.py` | Shared utility functions used across modules. |
+| `evaluation.py` | Shared evaluation function: Accuracy, Precision, Recall, F1-score, confusion matrix. Used by all `train_*.py` scripts. |
+| `inference_utils.py` | Shared inference-time helpers used by all `predict_*.py` scripts: severity rating, influential words, result formatting. |
 
 ### `app/`
 
@@ -297,7 +295,7 @@ data/raw/clickbait_data.csv
 ### Step 3: Run Shared Pipeline
 
 ```bash
-python src/shared_pipeline.py
+python src/data_pipeline.py
 ```
 
 ### Step 4: Train Models

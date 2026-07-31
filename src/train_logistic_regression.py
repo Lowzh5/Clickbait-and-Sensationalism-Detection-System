@@ -1,8 +1,8 @@
 import os
 import joblib
 from sklearn.linear_model import LogisticRegression
-from shared_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
-from utils import evaluate_model
+from data_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
+from evaluation import evaluate_model
 
 if __name__ == "__main__":
     # reuse the shared pipeline instead of duplicating loading/cleaning/TF-IDF code
