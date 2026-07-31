@@ -6,11 +6,11 @@ Pipeline: user headline -> text cleaning -> TF-IDF vectorizer -> trained model -
 How to run:
     streamlit run app/streamlit_app.py
 
-How to add a new model later (e.g. once Naive Bayes is trained):
-    1. Implement predict_naive_bayes(headline) in src/predict_naive_bayes.py so it
-       returns the same dict shape as predict_svm() (see format_result in src/inference_utils.py).
-    2. Import it below (next to the predict_svm import).
-    3. In MODEL_REGISTRY, set "available": True and "predict_fn": predict_naive_bayes.
+How to add a new model later:
+    1. Implement predict_<model>(headline) in src/predict_<model>.py so it returns
+       the same dict shape as predict_svm() (see format_result in src/inference_utils.py).
+    2. Import it below (next to the other predict_* imports).
+    3. In MODEL_REGISTRY, set "available": True and "predict_fn": predict_<model>.
     That's it - the rest of the UI (selection, validation, result cards) needs no changes.
 """
 
@@ -29,10 +29,7 @@ if SRC_DIR not in sys.path:
 
 from predict_svm import predict_svm  # noqa: E402
 from predict_logistic_regression import predict_logistic_regression  # noqa: E402
-from predict_naive_bayes import predict_naive_bayes
-
-# Not ready yet - uncomment once implemented and trained:
-# from predict_naive_bayes import predict_naive_bayes
+from predict_naive_bayes import predict_naive_bayes  # noqa: E402
 
 
 # --- model registry --------------------------------------------------------
@@ -56,11 +53,13 @@ MODEL_REGISTRY = {
         "status_note": "Trained and ready.",
     },
     "All Models": {
-        "available": False,
-        "predict_fn": None,
-        "status_note": "Coming soon - requires every individual model to be ready.",
+        "available": True,
+        "predict_fn": None,  # special-cased below - runs all three models and shows them side by side
+        "status_note": "Trained and ready - shows all three models side by side.",
     },
 }
+
+ALL_MODEL_NAMES = ["SVM", "Logistic Regression", "Naive Bayes"]
 
 EXAMPLE_HEADLINES = [
     "You Won't Believe What Happened Next",
@@ -81,7 +80,7 @@ st.set_page_config(
 st.title("🎯 Clickbait Detection System")
 st.write(
     "Enter an English news headline below and a trained NLP model will predict "
-    "whether it is **Clickbait** or **Non-clickbait**, along with a score, "
+    "whether it is **Clickbait** or **Not Clickbait**, along with a score, "
     "severity level, and the words that most influenced the decision."
 )
 
@@ -197,6 +196,40 @@ def display_result(result: dict, model_name: str) -> None:
     )
 
 
+def display_all_models_result(results: list[dict]) -> None:
+    """Render one compact card per model, side by side, for the "All Models" option."""
+    severity_color = {"Low": "green", "Medium": "orange", "High": "red"}
+
+    st.divider()
+    st.subheader("Result - All Models")
+
+    cols = st.columns(len(results))
+    for col, result in zip(cols, results):
+        with col:
+            prediction = result["prediction"]
+            score = result["clickbait_score"]
+            severity = result["severity"]
+            words = result["influential_words"]
+            prediction_icon = "🚩" if prediction == "Clickbait" else "✅"
+
+            st.markdown(f"**{result['model_name']}**")
+            st.metric("Prediction", f"{prediction_icon} {prediction}")
+            st.metric("Score", f"{score} / 100")
+            st.progress(score / 100)
+            st.markdown(f"Severity: :{severity_color.get(severity, 'gray')}[**{severity}**]")
+
+            st.caption("Influential words:")
+            if words:
+                st.markdown(" ".join(f":blue-badge[{w}]" for w in words))
+            else:
+                st.caption("None found.")
+
+    st.info(
+        "ℹ️ Each model was trained independently and may disagree - compare "
+        "the predictions, scores, and influential words above."
+    )
+
+
 if analyze_clicked:
     headline = st.session_state["headline_input"].strip()
 
@@ -209,6 +242,10 @@ if analyze_clicked:
         )
     elif not MODEL_REGISTRY[selected_model]["available"]:
         st.info(f"🚧 {selected_model} is not available yet. Please select **SVM** for now.")
+    elif selected_model == "All Models":
+        with st.spinner("Analyzing headline with all models..."):
+            results = [MODEL_REGISTRY[name]["predict_fn"](headline) for name in ALL_MODEL_NAMES]
+        display_all_models_result(results)
     else:
         predict_fn = MODEL_REGISTRY[selected_model]["predict_fn"]
         with st.spinner(f"Analyzing headline with {selected_model}..."):

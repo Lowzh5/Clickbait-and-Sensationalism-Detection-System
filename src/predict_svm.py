@@ -31,7 +31,7 @@ def predict_svm(headline):
     confidence = sigmoid(decision_value)
     clickbait_score = int(round(confidence * 100))
 
-    prediction = "Clickbait" if decision_value > 0 else "Non-clickbait"
+    prediction = "Clickbait" if decision_value > 0 else "Not Clickbait"
     severity = assign_severity(clickbait_score)
     influential_words = get_influential_words(model, vectorizer, text_vector)
 
