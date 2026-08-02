@@ -16,17 +16,18 @@ def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
 def predict_svm(headline):
-    # 1. clean the input headline
+    # clean the input headline
     cleaned = clean_text(headline)
 
-    # 2. transform into TF-IDF features using the already-fitted vectorizer
+    # transform into TF-IDF features using the already-fitted vectorizer
     text_vector = vectorizer.transform([cleaned])
 
-    # 3. LinearSVC has no predict_proba(), so use decision_function() instead.
+    # LinearSVC has no predict_proba(), so use decision_function() instead.
     # Positive values mean the headline is on the "clickbait" side of the margin, vice versa
+    # decision_function is sklearn built in wx + b (model.coef_ × input_tfidf + model.intercept_)
     decision_value = model.decision_function(text_vector)[0]
 
-    # 4. convert the raw decision value into a confidence-like probability (0-1),
+    # convert the raw decision value into a confidence-like probability (0-1),
     # then into a 0-100 clickbait score
     confidence = sigmoid(decision_value)
     clickbait_score = int(round(confidence * 100))
