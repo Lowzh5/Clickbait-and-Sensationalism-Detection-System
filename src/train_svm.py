@@ -1,6 +1,6 @@
 import os
 import joblib
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC #Support Vector Classifier
 from data_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
 from evaluation import evaluate_model
 

@@ -49,7 +49,8 @@ def get_influential_words(model, vectorizer, text_vector, top_n=5):
     present_idx = np.where(tfidf_values > 0)[0]
 
     # contribution towards the "clickbait" class for each present word
-    # 贡献度 = tfidf值 × 模型权重
+    # weights are same with the weight inside the decision_function()
+    # the diff is contribution are store the TFIDF * weight for EACH word
     contributions = tfidf_values[present_idx] * weights[present_idx]
 
     # sort words (and their scores, same order) by how strongly they push towards clickbait
