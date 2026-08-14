@@ -23,7 +23,7 @@ def predict_naive_bayes(headline):
     clickbait_prob = prob[1]
     clickbait_score = int(round(clickbait_prob * 100))
 
-    prediction = "Clickbait" if clickbait_score > 50 else "Not Clickbait"
+    prediction = "Clickbait" if clickbait_score > 50 else "Non-clickbait"
     severity = assign_severity(clickbait_score)
 
     # Extract influential words

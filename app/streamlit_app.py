@@ -20,30 +20,12 @@ from predict_naive_bayes import predict_naive_bayes  # noqa: E402
 
 
 # --- model registry --------------------------------------------------------
-# Single source of truth for which models the UI can offer. Flip "available"
-# to True and plug in "predict_fn" once a model is trained and its predict_*
-# function is ready - no other UI code needs to change.
+# Maps each selectable model name to its predict function.
 MODEL_REGISTRY = {
-    "SVM": {
-        "available": True,
-        "predict_fn": predict_svm,
-        "status_note": "Trained and ready.",
-    },
-    "Naive Bayes": {
-        "available": True,
-        "predict_fn": predict_naive_bayes,
-        "status_note": "Trained and ready.",
-    },
-    "Logistic Regression": {
-        "available": True,
-        "predict_fn": predict_logistic_regression,
-        "status_note": "Trained and ready.",
-    },
-    "All Models": {
-        "available": True,
-        "predict_fn": None,  # special-cased below - runs all three models and shows them side by side
-        "status_note": "Trained and ready - shows all three models side by side.",
-    },
+    "SVM": predict_svm,
+    "Naive Bayes": predict_naive_bayes,
+    "Logistic Regression": predict_logistic_regression,
+    "All Models": None,  # special-cased below - runs all three models and shows them side by side
 }
 
 ALL_MODEL_NAMES = ["SVM", "Logistic Regression", "Naive Bayes"]
@@ -67,7 +49,7 @@ st.set_page_config(
 st.title("🎯 Clickbait Detection System")
 st.write(
     "Enter an English news headline below and a trained NLP model will predict "
-    "whether it is **Clickbait** or **Not Clickbait**, along with a score, "
+    "whether it is **Clickbait** or **Non-clickbait**, along with a score, "
     "severity level, and the words that most influenced the decision."
 )
 # --- input section --------------------------------------------------------
@@ -93,21 +75,12 @@ st.subheader("2. Select a Model")
 
 model_names = list(MODEL_REGISTRY.keys())
 
-
-def _format_model_label(name: str) -> str:
-    return name if MODEL_REGISTRY[name]["available"] else f"{name}  (Coming Soon)"
-
-
 selected_model = st.radio(
     "Model",
     options=model_names,
-    format_func=_format_model_label,
     horizontal=True,
     label_visibility="collapsed",
 )
-
-if not MODEL_REGISTRY[selected_model]["available"]:
-    st.caption(f"🚧 {selected_model} is not available yet - {MODEL_REGISTRY[selected_model]['status_note']}")
 
 
 # --- analyze button --------------------------------------------------------
@@ -138,7 +111,7 @@ def highlight_headline(headline: str, words: list[str]) -> str:
 
     return re.sub(
         combined_pattern,
-        lambda m: f":orange[**{m.group(0)}**]",
+        lambda m: f":red[**{m.group(0)}**]",
         headline,
         flags=re.IGNORECASE,
     )
@@ -265,14 +238,12 @@ if analyze_clicked:
             "⚠️ That headline looks too short. Please enter a more complete, "
             "meaningful headline for an accurate prediction."
         )
-    elif not MODEL_REGISTRY[selected_model]["available"]:
-        st.info(f"🚧 {selected_model} is not available yet. Please select **SVM** for now.")
     elif selected_model == "All Models":
         with st.spinner("Analyzing headline with all models..."):
-            results = [MODEL_REGISTRY[name]["predict_fn"](headline) for name in ALL_MODEL_NAMES]
+            results = [MODEL_REGISTRY[name](headline) for name in ALL_MODEL_NAMES]
         display_all_models_result(results, headline)
     else:
-        predict_fn = MODEL_REGISTRY[selected_model]["predict_fn"]
+        predict_fn = MODEL_REGISTRY[selected_model]
         with st.spinner(f"Analyzing headline with {selected_model}..."):
             result = predict_fn(headline)
         display_result(result, selected_model, headline)
