@@ -71,7 +71,7 @@ def tfidf(df):
 
 """
 only run when execute this file directly, it does not run when another 
-file import from it (from shared_pipeline import clean_text) 
+file import from it (from data_pipeline import clean_text) 
 """
 if __name__ == "__main__": 
     df = load_dataset()

@@ -10,8 +10,7 @@ In addition to classification, the system provides:
 * Severity rating: Low / Medium / High
 * Model-based explanation using influential TF-IDF words
 * Model selection: Naive Bayes, Logistic Regression, SVM, or All Models
-* Majority voting when All Models is selected
-* Model comparison table
+* Side-by-side comparison of all three models' predictions when All Models is selected
 
 The prototype is built using Python and Streamlit.
 
@@ -46,12 +45,10 @@ Train 3 models:
 Evaluate models:
   - Accuracy / Precision / Recall / F1-score
 ↓
-User selects model:
+User inputs English headline and selects model:
   - Naive Bayes / Logistic Regression / SVM / All Models
 ↓
-User inputs English headline
-↓
-Selected model predicts Clickbait or Non-clickbait
+Selected model(s) predict Clickbait or Non-clickbait
 ↓
 Model-based scoring (clickbait probability × 100)
 ↓
@@ -59,7 +56,7 @@ Model-based severity (based on score range)
 ↓
 Model-based explanation (influential TF-IDF words)
 ↓
-Streamlit UI output
+Streamlit UI output (side by side per model if All Models is selected)
 ```
 
 ---
@@ -126,7 +123,7 @@ Clickbait-detection-system/
 
 | File | Description |
 |------|-------------|
-| `streamlit_app.py` | Streamlit web app: headline input, model selector, prediction display, score, severity, explanation, model comparison. |
+| `streamlit_app.py` | Streamlit web app: headline input, model selector, prediction display, score, severity, explanation, side-by-side All Models comparison. |
 
 ### `models/`
 
@@ -149,7 +146,8 @@ Each model's predict function must return the same output format:
     "prediction": "Clickbait",
     "clickbait_score": 84,
     "severity": "High",
-    "influential_words": ["shocking", "secret", "believe"]
+    "influential_words": ["shocking", "secret", "believe"],
+    "influential_word_scores": [0.42, 0.31, 0.27]
 }
 ```
 
@@ -208,7 +206,7 @@ Label meaning:
 
 ### Feature Extraction
 
-TF-IDF (Term Frequency-Inverse Document Frequency) with n-gram support `(1, 3)` to capture both single words and phrases.
+TF-IDF (Term Frequency-Inverse Document Frequency) with n-gram range `(1, 2)` and `max_features = 50,000` to capture both single words and two-word phrases.
 
 ### Models
 
@@ -242,7 +240,6 @@ All models use the same shared TF-IDF features for fair comparison.
 * TF-IDF feature extraction
 * Train 3 models: Naive Bayes, Logistic Regression, SVM
 * Evaluate 3 models: Accuracy, Precision, Recall, F1-score
-* Model comparison table
 * Model-based clickbait score
 * Model-based severity level: Low / Medium / High
 * Model-based explanation: influential words from selected model
@@ -250,12 +247,8 @@ All models use the same shared TF-IDF features for fair comparison.
 
 ### Should Have
 
-* Majority voting when All Models is selected
-* Final score for All Models using average of 3 model scores
-* Final severity based on average score
 * Display individual results for each model when All Models is selected
 * Confusion matrix for each model
-* Model comparison chart
 * Consistent UI layout for all model outputs
 
 ### Could Have
@@ -272,7 +265,7 @@ All models use the same shared TF-IDF features for fair comparison.
 |--------|-----------------|
 | Member 1 | Naive Bayes Classification: train, predict, score, severity, influential words |
 | Member 2 | Logistic Regression Classification and Shared Model Evaluation |
-| Member 3 | SVM Classification, Shared Pipeline, Majority Voting, Streamlit UI Integration |
+| Member 3 | SVM Classification, Shared Pipeline, Streamlit UI Integration |
 
 ---
 
@@ -281,7 +274,7 @@ All models use the same shared TF-IDF features for fair comparison.
 ### Step 1: Install Dependencies
 
 ```bash
-pip install pandas numpy scikit-learn streamlit matplotlib seaborn joblib
+pip install pandas numpy scikit-learn streamlit altair matplotlib joblib
 ```
 
 ### Step 2: Place Dataset
@@ -331,16 +324,12 @@ Severity: High
 Influential Words: shocking, secret, believe
 ```
 
-All Models output:
+All Models output (shown side by side, one card per model - no voting or averaging):
 
 ```
 Naive Bayes:          Clickbait (Score: 82)
 Logistic Regression:  Clickbait (Score: 84)
 SVM:                  Non-clickbait (Score: 45)
-
-Final Prediction: Clickbait (Majority Voting: 2/3)
-Final Score: 70 (Average)
-Final Severity: High
 ```
 
 ---
@@ -350,4 +339,4 @@ Final Severity: High
 * This project focuses on English clickbait detection only.
 * Scoring, severity, and explanation are model-based (not rule-based).
 * SVM uses LinearSVC for coefficient-based explanation support.
-* TF-IDF uses n-gram range (1, 3) to capture both words and phrases.
+* TF-IDF uses n-gram range (1, 2) to capture both words and two-word phrases.
