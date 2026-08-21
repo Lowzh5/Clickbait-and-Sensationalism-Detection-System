@@ -3,9 +3,6 @@ Ablation study for LinearSVC's C (regularization strength) parameter.
 TF-IDF config and train/test split are held fixed at the production values
 (ngram_range=(1,2), max_features=50000, random_state=42) - only C changes -
 so the results isolate C's effect on accuracy/precision/recall/F1.
-
-Fits everything in-memory - does NOT touch models/*.pkl, so it never
-overwrites the vectorizer/model used by predict_svm.py and the Streamlit app.
 """
 import os
 import sys

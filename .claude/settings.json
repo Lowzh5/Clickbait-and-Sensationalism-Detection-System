@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)",
+      "Bash(python -c \"import sklearn; print\\(sklearn.__version__\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(python3 -c ' *)",
+      "Bash('/c/Program Files/Python313/python' -c ' *)",
+      "Bash(git mv *)",
+      "Bash(git rm *)",
+      "Bash(git add *)",
+      "Bash(python src/predict_logistic_regression.py)",
+      "Bash(python -c \"import sys; sys.path.append\\('src'\\); import data_pipeline, evaluation, inference_utils; print\\('all modules import OK'\\)\")",
+      "Bash(dir models *)",
+      "Bash(python src/predict_naive_bayes.py)",
+      "WebSearch",
+      "Bash(python -c \"from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS; print\\('you' in ENGLISH_STOP_WORDS, 'your' in ENGLISH_STOP_WORDS, 'a' in ENGLISH_STOP_WORDS, 'the' in ENGLISH_STOP_WORDS\\)\")",
+      "Bash(python -c \"import streamlit; print\\(streamlit.__version__\\)\")",
+      "Bash(python -m streamlit run app/streamlit_app.py --server.headless true)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8501)",
+      "Read(//tmp/**)",
+      "Bash(cat /tmp/streamlit.log)",
+      "Bash(python -c \"print\\(3*2*3\\)\")",
+      "Bash(pkill -f \"streamlit run\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:8501)",
+      "Bash(python exploration/tfidf_ablation_study.py)",
+      "Bash(timeout 40 python exploration/tfidf_ablation_study.py)",
+      "Bash(python -c \"import altair; print\\(altair.__version__\\)\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 98624)",
+      "Bash(python reports/assignment/generate_you_your_chart.py)",
+      "Bash(python reports/assignment/generate_top_words_chart.py)",
+      "Bash(python -c \"import matplotlib; print\\(matplotlib.__version__\\)\")",
+      "Bash(python generate_svm_hyperplane_chart.py)",
+      "Bash(python svm_c_ablation_study.py)",
+      "Bash(grep -v \"^Dataset\\\\|^Shape\\\\|^$\\\\|^Columns\\\\|^Index\\\\|^First\\\\|^   \\\\|^Missing\\\\|^headline\\\\|^clickbait\\\\|^dtype\\\\|^Duplicate\\\\|^0$\\\\|^Label\\\\|^Name\\\\|^After\")",
+      "Bash(python reports/visualization/generate_model_top_words_chart.py)",
+      "Bash(python -m py_compile app/streamlit_app.py)"
+    ]
+  }
+}

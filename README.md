@@ -58,7 +58,6 @@ Model-based explanation (influential TF-IDF words)
 ↓
 Streamlit UI output (side by side per model if All Models is selected)
 ```
-
 ---
 
 ## 4. Project Structure
@@ -164,9 +163,9 @@ Clickbait Score = Clickbait probability × 100
 Severity is assigned based on the clickbait score range:
 
 ```
-0–30   = Low
-31–65  = Medium
-66–100 = High
+0–33   = Low
+34–66  = Medium
+67–100 = High
 ```
 
 ### Explanation
@@ -179,18 +178,11 @@ Influential words are extracted from the selected model's coefficients / feature
 
 The project uses a labelled English clickbait dataset from Kaggle.
 
-Dataset columns:
+Dataset columns: headline, clickbait
 
-```
-headline, clickbait
-```
-
-Label meaning:
-
-```
+Clickbait label meaning:
 1 = Clickbait
 0 = Non-clickbait
-```
 
 ---
 
@@ -228,115 +220,3 @@ All models use the same shared TF-IDF features for fair comparison.
 | Precision | Of predicted clickbait, how many are actually clickbait |
 | Recall | Of actual clickbait, how many were detected |
 | F1-score | Harmonic mean of Precision and Recall |
-
----
-
-## 10. System Features
-
-### Must Have
-
-* English Kaggle clickbait dataset with headline and label columns
-* Text preprocessing (lowercase, remove punctuation, remove special characters, remove missing/duplicate records)
-* TF-IDF feature extraction
-* Train 3 models: Naive Bayes, Logistic Regression, SVM
-* Evaluate 3 models: Accuracy, Precision, Recall, F1-score
-* Model-based clickbait score
-* Model-based severity level: Low / Medium / High
-* Model-based explanation: influential words from selected model
-* Streamlit UI for single-title prediction
-
-### Should Have
-
-* Display individual results for each model when All Models is selected
-* Confusion matrix for each model
-* Consistent UI layout for all model outputs
-
-### Could Have
-
-* Batch CSV prediction (upload CSV, predict all titles)
-* Download prediction result as CSV
-* PCA visualization (reduce TF-IDF features to 2D, show clickbait distribution)
-
----
-
-## 11. Team Task Distribution
-
-| Member | Module in Charge |
-|--------|-----------------|
-| Member 1 | Naive Bayes Classification: train, predict, score, severity, influential words |
-| Member 2 | Logistic Regression Classification and Shared Model Evaluation |
-| Member 3 | SVM Classification, Shared Pipeline, Streamlit UI Integration |
-
----
-
-## 12. How to Run
-
-### Step 1: Install Dependencies
-
-```bash
-pip install pandas numpy scikit-learn streamlit altair matplotlib joblib
-```
-
-### Step 2: Place Dataset
-
-Place the Kaggle dataset in:
-
-```
-data/raw/clickbait_data.csv
-```
-
-### Step 3: Run Shared Pipeline
-
-```bash
-python src/data_pipeline.py
-```
-
-### Step 4: Train Models
-
-```bash
-python src/train_naive_bayes.py
-python src/train_logistic_regression.py
-python src/train_svm.py
-```
-
-### Step 5: Run Streamlit App
-
-```bash
-streamlit run app/streamlit_app.py
-```
-
----
-
-## 13. Expected Output
-
-For headline input:
-
-```
-You won't believe what happened next!
-```
-
-Single model output:
-
-```
-Prediction: Clickbait
-Clickbait Score: 84/100
-Severity: High
-Influential Words: shocking, secret, believe
-```
-
-All Models output (shown side by side, one card per model - no voting or averaging):
-
-```
-Naive Bayes:          Clickbait (Score: 82)
-Logistic Regression:  Clickbait (Score: 84)
-SVM:                  Non-clickbait (Score: 45)
-```
-
----
-
-## 14. Notes
-
-* This project focuses on English clickbait detection only.
-* Scoring, severity, and explanation are model-based (not rule-based).
-* SVM uses LinearSVC for coefficient-based explanation support.
-* TF-IDF uses n-gram range (1, 2) to capture both words and two-word phrases.
