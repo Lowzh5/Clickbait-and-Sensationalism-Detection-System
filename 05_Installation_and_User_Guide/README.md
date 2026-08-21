@@ -31,7 +31,7 @@ The trained models are already saved in `models/`, so training is optional. Run 
 1. `python src/train_naive_bayes.py` — trains and saves `models/naive_bayes.pkl`
 2. `python src/train_logistic_regression.py` — trains and saves `models/logistic_regression.pkl`
 3. `python src/train_svm.py` — trains and saves `models/svm.pkl`
-4. `streamlit run app/streamlit_app.py` — launches the web app
+4. `streamlit run app/streamlit_app.py` or `python -m streamlit run app/streamlit_app.py` — launches the web app
 
 Notes:
 - Steps 1–3 also save `models/tfidf_vectorizer.pkl` and can be skipped if you just want to use the already-trained models.

@@ -14,10 +14,9 @@ SRC_DIR = os.path.join(BASE_DIR, "src")
 if SRC_DIR not in sys.path:
     sys.path.append(SRC_DIR)
 
-from predict_svm import predict_svm  # noqa: E402
-from predict_logistic_regression import predict_logistic_regression  # noqa: E402
-from predict_naive_bayes import predict_naive_bayes  # noqa: E402
-
+from predict_svm import predict_svm
+from predict_logistic_regression import predict_logistic_regression
+from predict_naive_bayes import predict_naive_bayes 
 
 # --- model registry --------------------------------------------------------
 # Maps each selectable model name to its predict function.
@@ -37,7 +36,6 @@ EXAMPLE_HEADLINES = [
 ]
 
 MIN_HEADLINE_LENGTH = 10  # characters; used for the "too short" input check
-
 
 # --- page setup --------------------------------------------------------
 st.set_page_config(
@@ -69,7 +67,6 @@ st.caption("Need inspiration? Try typing something like:")
 for example in EXAMPLE_HEADLINES:
     st.caption(f"- {example}")
 
-
 # --- model selection section ---------------------------------------------
 st.subheader("2. Select a Model")
 
@@ -82,22 +79,17 @@ selected_model = st.radio(
     label_visibility="collapsed",
 )
 
-
 # --- analyze button --------------------------------------------------------
 st.subheader("3. Analyze")
 analyze_clicked = st.button("🔍 Analyze Headline", type="primary")
 
 
+"""
+Return the original headline with each influential word/phrase wrapped
+in markdown highlighting, matched case-insensitively against the raw text.
+"""
 def highlight_headline(headline: str, words: list[str]) -> str:
-    """Return the original headline with each influential word/phrase wrapped
-    in markdown highlighting, matched case-insensitively against the raw text.
-
-    clean_text() (data_pipeline.py) lowercases the headline and deletes
-    apostrophes without inserting a space (e.g. "Won't" -> "wont"), so the
-    words returned by get_influential_words() no longer look like substrings
-    of the original headline. To find them again, each character is joined
-    with an optional apostrophe so "wont" can match "won't" in the raw text.
-    """
+    
     if not words:
         return headline
 
@@ -117,11 +109,13 @@ def highlight_headline(headline: str, words: list[str]) -> str:
     )
 
 
+"""
+Horizontal bar chart of each influential word's contribution score.
+Positive = pushed the prediction towards Clickbait, negative = away from it.
+`compact` drops the legend/axis title for the narrow All-Models columns.
+"""
 def build_contribution_chart(words: list[str], scores: list[float], compact: bool = False) -> alt.Chart:
-    """Horizontal bar chart of each influential word's contribution score.
-    Positive = pushed the prediction towards Clickbait, negative = away from it.
-    `compact` drops the legend/axis title for the narrow All-Models columns.
-    """
+    
     df = pd.DataFrame({"word": words, "contribution": scores})
     df["direction"] = df["contribution"].apply(
         lambda v: "Toward Clickbait" if v >= 0 else "Away from Clickbait"
@@ -150,11 +144,13 @@ def build_contribution_chart(words: list[str], scores: list[float], compact: boo
     )
 
 
+"""
+Render the prediction result as cards. `result` follows the shape
+produced by utils.format_result(): model_name, prediction, clickbait_score,
+severity, influential_words, influential_word_scores.
+"""
 def display_result(result: dict, model_name: str, headline: str) -> None:
-    """Render the prediction result as cards. `result` follows the shape
-    produced by utils.format_result(): model_name, prediction, clickbait_score,
-    severity, influential_words, influential_word_scores.
-    """
+
     prediction = result["prediction"]
     score = result["clickbait_score"]
     severity = result["severity"]
