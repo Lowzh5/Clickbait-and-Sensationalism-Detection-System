@@ -17,17 +17,14 @@ df = pd.read_csv(os.path.join(BASE_DIR, "data", "processed", "cleaned_clickbait_
 STOP = {"the", "a", "an", "of", "to", "in", "on", "for", "and", "is", "are",
         "this", "that", "with", "from", "at", "by"}
 
-
 def top_words(subset, n=10):
     words = " ".join(subset["cleaned_headline"]).split()
     words = [w for w in words if w not in STOP and len(w) > 2]
     return [w for w, _ in Counter(words).most_common(n)]
 
-
 def count_containing(subset, word):
     pattern = r"\b" + re.escape(word) + r"\b"
     return subset["cleaned_headline"].str.contains(pattern, regex=True).sum()
-
 
 non_clickbait_df = df[df["clickbait"] == 0]
 clickbait_df = df[df["clickbait"] == 1]

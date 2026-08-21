@@ -1,3 +1,4 @@
+"""Trains a Logistic Regression model on the shared TF-IDF pipeline and saves it to models/logistic_regression.pkl."""
 import os
 import joblib
 from sklearn.linear_model import LogisticRegression

@@ -1,3 +1,4 @@
+"""Loads, cleans, and TF-IDF vectorizes the clickbait dataset; shared by all train/predict scripts."""
 import os #file path operations (joining paths, getting directory names)
 import pandas as pd
 import re #regular expressions
@@ -5,7 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer #implement TF-IDF
 from sklearn.model_selection import train_test_split # split the dataset to 80% training and 20% testing
 import joblib # store the tfidf_vectorizer.pkl
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # find the project root(not strictly necessary but just to avoid headaches)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # find the project root
 
 def load_dataset(csv_path=None):
     if csv_path is None:
@@ -61,7 +62,7 @@ def tfidf(df):
     # have ngram_range then max_features, max_feature is based on the term frequency in the entire dataset extracted
     vectorizer = TfidfVectorizer(ngram_range=(1,2),max_features=50000)
     X_train_tfidf = vectorizer.fit_transform(X_train) #fit_transfrom is learn + change
-    X_test_tfidf = vectorizer.transform(X_test) # 从vectorizer里面拿X_train的词典来train
+    X_test_tfidf = vectorizer.transform(X_test) # get X_train from vectorizer to train
 
     # save vectorizer
     vectorizer_path = os.path.join(BASE_DIR,"models","tfidf_vectorizer.pkl")
@@ -69,10 +70,6 @@ def tfidf(df):
 
     return X_train_tfidf, X_test_tfidf, y_train, y_test, vectorizer
 
-"""
-only run when execute this file directly, it does not run when another 
-file import from it (from data_pipeline import clean_text) 
-"""
 if __name__ == "__main__": 
     df = load_dataset()
     cleaned_df = clean_dataset(df)
