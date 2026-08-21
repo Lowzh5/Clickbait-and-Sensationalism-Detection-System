@@ -1,3 +1,4 @@
+"""Trains an SVM (LinearSVC) model on the shared TF-IDF pipeline and saves it to models/svm.pkl."""
 import os
 import joblib
 from sklearn.svm import LinearSVC #Support Vector Classifier

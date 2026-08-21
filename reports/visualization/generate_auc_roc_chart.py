@@ -1,14 +1,7 @@
 """
 Generate the ROC curve / AUC comparison chart for each model using the shared
 overall-best ablation configuration (ngram_range=(1,2), stop_words=None,
-max_features=50000 -- see Section 4.1.3), to support the Best Model Selection
-discussion (Section 4.2.5). All three models are trained on the exact same
-TF-IDF features for a fair, apples-to-apples comparison.
-
-This shared config is identical to the production pipeline in
-data_pipeline.tfidf(), so models/tfidf_vectorizer.pkl, logistic_regression.pkl,
-and svm.pkl are reused directly. Naive Bayes' saved model also happens to use
-this same config, but is refit here explicitly for clarity/consistency.
+max_features=50000 ) to support the Best Model Selection
 """
 import os
 import sys

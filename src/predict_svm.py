@@ -1,3 +1,4 @@
+"""Loads the saved SVM model and predicts whether a headline is clickbait."""
 import os
 import math
 import joblib
@@ -16,6 +17,7 @@ def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
 def predict_svm(headline):
+    """Predicts Clickbait/Non-clickbait for a headline using the SVM model."""
     # clean the input headline
     cleaned = clean_text(headline)
 
@@ -24,7 +26,7 @@ def predict_svm(headline):
 
     # LinearSVC has no predict_proba(), so use decision_function() instead.
     # Positive values mean the headline is on the "clickbait" side of the margin, vice versa
-    # decision_function is sklearn built in wx + b (model.coef_ × input_tfidf + model.intercept_)
+    # decision_function is sklearn built in wx + b (model.coef_ * input_tfidf + model.intercept_)
     decision_value = model.decision_function(text_vector)[0]
 
     # convert the raw decision value into a confidence-like probability (0-1),

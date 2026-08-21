@@ -1,3 +1,4 @@
+"""Trains a Naive Bayes model on the shared TF-IDF pipeline and saves it to models/naive_bayes.pkl."""
 import os
 import joblib
 from sklearn.naive_bayes import MultinomialNB
