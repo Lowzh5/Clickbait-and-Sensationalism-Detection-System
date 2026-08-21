@@ -3,9 +3,6 @@ Ablation study for TfidfVectorizer(ngram_range, stop_words, max_features).
 Trains Naive Bayes, Logistic Regression, and SVM under each of the 18
 combinations and records accuracy/precision/recall/F1 for every (config, model)
 pair into exploration/ablation_results.csv.
-
-Fits everything in-memory - does NOT touch models/*.pkl, so it never
-overwrites the vectorizer/models used by predict_*.py and the Streamlit app.
 """
 import os
 import sys

@@ -1,12 +1,7 @@
 """
 Generates the per-model top-10 influential words chart used in Discussion
-4.2.2 (Influential Words Interpretation): the 10 highest-weighted words/
+4.2.4 (Influential Words Interpretation): the 10 highest-weighted words/
 n-grams learned by each trained model (Naive Bayes, Logistic Regression, SVM).
-
-Unlike Figure 3.2 (raw word frequency in the dataset), this reflects what each
-model actually learned - weights are pulled directly from the trained model
-files (models/naive_bayes.pkl, logistic_regression.pkl, svm.pkl), so it must
-be re-run any time those models are retrained.
 """
 import os
 import joblib

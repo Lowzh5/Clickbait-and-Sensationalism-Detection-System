@@ -64,7 +64,8 @@ def tfidf(df):
     X_train_tfidf = vectorizer.fit_transform(X_train) #fit_transfrom is learn + change
     X_test_tfidf = vectorizer.transform(X_test) # get X_train from vectorizer to train
 
-    # save vectorizer
+    # save vectorizer (models/ is gitignored, so create it if this is a fresh clone)
+    os.makedirs(os.path.join(BASE_DIR, "models"), exist_ok=True)
     vectorizer_path = os.path.join(BASE_DIR,"models","tfidf_vectorizer.pkl")
     joblib.dump(vectorizer, vectorizer_path) #save the model(vectorizer) to the file(vectorizer_path)
 

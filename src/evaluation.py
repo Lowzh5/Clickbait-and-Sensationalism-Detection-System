@@ -1,6 +1,4 @@
-"""
-evaluate_model(y_test, y_pred, model_name) - prints and returns accuracy, precision, recall, f1, confusion matrix
-"""
+"""evaluate_model(y_test, y_pred, model_name) - prints and returns accuracy, precision, recall, f1, confusion matrix"""
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
