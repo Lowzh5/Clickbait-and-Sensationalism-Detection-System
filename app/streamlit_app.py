@@ -14,9 +14,23 @@ SRC_DIR = os.path.join(BASE_DIR, "src")
 if SRC_DIR not in sys.path:
     sys.path.append(SRC_DIR)
 
-from predict_svm import predict_svm
-from predict_logistic_regression import predict_logistic_regression
-from predict_naive_bayes import predict_naive_bayes 
+try:
+    from predict_svm import predict_svm
+    from predict_logistic_regression import predict_logistic_regression
+    from predict_naive_bayes import predict_naive_bayes
+except Exception as e:
+    # predict_*.py load models/*.pkl at import time, so a missing/corrupted file
+    # or a version mismatch surfaces here instead of a raw traceback to the user.
+    st.set_page_config(page_title="Clickbait Detection System", page_icon="🎯", layout="wide")
+    st.error(
+        "⚠️ Could not load the trained models.\n\n"
+        "Make sure `models/naive_bayes.pkl`, `models/logistic_regression.pkl`, "
+        "`models/svm.pkl`, and `models/tfidf_vectorizer.pkl` exist (run the training "
+        "scripts in `src/` first) and that your installed package versions match "
+        "`requirements.txt`.\n\n"
+        f"Details: {e}"
+    )
+    st.stop()
 
 # --- model registry --------------------------------------------------------
 # Maps each selectable model name to its predict function.
@@ -50,6 +64,7 @@ st.write(
     "whether it is **Clickbait** or **Non-clickbait**, along with a score, "
     "severity level, and the words that most influenced the decision."
 )
+st.caption("Severity bands: 0–33 Low · 34–66 Medium · 67–100 High")
 # --- input section --------------------------------------------------------
 st.subheader("1. Enter a Headline")
 
