@@ -1,4 +1,3 @@
-"""Loads, cleans, and TF-IDF vectorizes the clickbait dataset; shared by all train/predict scripts."""
 import os #file path operations (joining paths, getting directory names)
 import pandas as pd
 import re #regular expressions
@@ -8,6 +7,10 @@ import joblib # store the tfidf_vectorizer.pkl
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # find the project root
 
+"""
+Loads, cleans, and TF-IDF vectorizes the clickbait dataset; 
+shared by all train/predict scripts.
+"""
 def load_dataset(csv_path=None):
     if csv_path is None:
         csv_path = os.path.join(BASE_DIR, "data", "raw", "clickbait_data.csv") # project root/data/raw/clickbait_data.csv

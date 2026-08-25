@@ -1,10 +1,13 @@
-"""Trains a Naive Bayes model on the shared TF-IDF pipeline and saves it to models/naive_bayes.pkl."""
 import os
 import joblib
 from sklearn.naive_bayes import MultinomialNB
 from data_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
 from evaluation import evaluate_model
 
+"""
+Trains a Naive Bayes model on the shared TF-IDF pipeline 
+and saves it to models/naive_bayes.pkl.
+"""
 if __name__ == "__main__":
 
     # Reuse shared pipeline to load and clean and vectorize the data

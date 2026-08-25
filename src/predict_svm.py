@@ -1,4 +1,3 @@
-"""Loads the saved SVM model and predicts whether a headline is clickbait."""
 import os
 import math
 import joblib
@@ -16,8 +15,11 @@ def sigmoid(x):
     # squashes decision_function's raw distance-from-margin value into a 0-1 range
     return 1 / (1 + math.exp(-x))
 
+"""
+Loads the saved SVM model 
+and predicts whether a headline is clickbait.
+"""
 def predict_svm(headline):
-    """Predicts Clickbait/Non-clickbait for a headline using the SVM model."""
     # clean the input headline
     cleaned = clean_text(headline)
 
