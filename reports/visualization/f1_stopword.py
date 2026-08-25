@@ -1,5 +1,6 @@
 """
-Generate the chart to show the F1-score performance between stop_word = None vs = English
+Generate the chart to show the F1-score performance between 
+stop_word = None vs = English
 """
 import os
 import pandas as pd

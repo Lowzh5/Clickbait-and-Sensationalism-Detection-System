@@ -1,4 +1,3 @@
-"""evaluate_model(y_test, y_pred, model_name) - prints and returns accuracy, precision, recall, f1, confusion matrix"""
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -8,6 +7,10 @@ from sklearn.metrics import (
     classification_report,
 )
 
+"""
+evaluate_model(y_test, y_pred, model_name) - 
+prints and returns accuracy, precision, recall, f1, confusion matrix
+"""
 def evaluate_model(y_test, y_pred, model_name="Model"):
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)

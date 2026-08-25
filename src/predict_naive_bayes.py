@@ -1,4 +1,3 @@
-"""Loads the saved Naive Bayes model and predicts whether a headline is clickbait."""
 import os
 import joblib
 from data_pipeline import BASE_DIR, clean_text
@@ -11,9 +10,11 @@ VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "tfidf_vectorizer.pkl")
 model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
 
+"""
+Loads the saved Naive Bayes model 
+and predicts whether a headline is clickbait.
+"""
 def predict_naive_bayes(headline):
-    """Predicts Clickbait/Non-clickbait for a headline using the Naive Bayes model."""
-
     # Clean headline
     cleaned = clean_text(headline)
 

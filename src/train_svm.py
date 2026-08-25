@@ -1,10 +1,13 @@
-"""Trains an SVM (LinearSVC) model on the shared TF-IDF pipeline and saves it to models/svm.pkl."""
 import os
 import joblib
 from sklearn.svm import LinearSVC #Support Vector Classifier
 from data_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
 from evaluation import evaluate_model
 
+"""
+Trains an SVM (LinearSVC) model on the shared TF-IDF pipeline and 
+saves it to models/svm.pkl.
+"""
 if __name__ == "__main__":
     # reuse the shared pipeline instead of duplicating loading/cleaning/TF-IDF code
     df = load_dataset()

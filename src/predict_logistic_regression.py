@@ -1,4 +1,3 @@
-"""Loads the saved Logistic Regression model and predicts whether a headline is clickbait."""
 import os
 import joblib
 from data_pipeline import BASE_DIR, clean_text
@@ -11,6 +10,10 @@ VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "tfidf_vectorizer.pkl")
 model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
 
+"""
+Loads the saved Logistic Regression model 
+and predicts whether a headline is clickbait.
+"""
 def predict_logistic_regression(headline):
     """Predicts Clickbait/Non-clickbait for a headline using the Logistic Regression model."""
     # 1. clean the input headline

@@ -1,10 +1,13 @@
-"""Trains a Logistic Regression model on the shared TF-IDF pipeline and saves it to models/logistic_regression.pkl."""
 import os
 import joblib
 from sklearn.linear_model import LogisticRegression
 from data_pipeline import BASE_DIR, load_dataset, clean_dataset, tfidf
 from evaluation import evaluate_model
 
+"""
+Trains a Logistic Regression model on the shared TF-IDF pipeline 
+and saves it to models/logistic_regression.pkl.
+"""
 if __name__ == "__main__":
     # reuse the shared pipeline instead of duplicating loading/cleaning/TF-IDF code
     df = load_dataset()

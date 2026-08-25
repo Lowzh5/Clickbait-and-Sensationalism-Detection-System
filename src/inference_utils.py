@@ -1,10 +1,10 @@
-"""
-assign_severity(score) - maps the clickbait score to Low / Medium / High (0-30, 31-65, 66-100)
-get_influential_words(model, vectorizer, text_vector) - extracts the top influential TF-IDF words from a model's coefficients/weights for a given input
-format_result(model_name, prediction, score, severity, words) - builds the standard output dict that all predict functions return
-"""
 import numpy as np
 
+"""
+assign_severity(score) - maps the clickbait score to Low / Medium / High (0-33, 34-66, 67-100)
+get_influential_words(model, vectorizer, text_vector) - extracts the top influential TF-IDF words from a model's coefficients/weights for a given input to show in Streamlit
+format_result(model_name, prediction, score, severity, words) - builds the standard output dict that all predict functions return
+"""
 def assign_severity(score):
     # score is expected to be an int only after round up
     if score <= 33:
