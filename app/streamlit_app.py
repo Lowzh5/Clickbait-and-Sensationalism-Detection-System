@@ -142,7 +142,7 @@ def build_contribution_chart(words: list[str], scores: list[float], compact: boo
     )
 
 
-def display_result(result: dict, model_name: str, headline: str) -> None:
+def display_result(result: dict, headline: str) -> None:
     """
     Render the prediction result as cards. `result` follows the shape
     produced by utils.format_result(): model_name, prediction, clickbait_score,
@@ -239,4 +239,4 @@ if analyze_clicked:
         predict_fn = MODEL_REGISTRY[selected_model]
         with st.spinner(f"Analyzing headline with {selected_model}..."):
             result = predict_fn(headline)
-        display_result(result, selected_model, headline)
+        display_result(result, headline)
