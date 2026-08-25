@@ -89,7 +89,22 @@ Clickbait-detection-system/
 │   ├── svm.pkl
 │   └── tfidf_vectorizer.pkl
 │
-├── reports/                          # Reports, charts, screenshots
+├── exploration/                      # Ablation studies (not part of the app's runtime pipeline)
+│   ├── tfidf_ablation_study.py       # Tests 18 TF-IDF configs x 3 models
+│   ├── best_ablation_configuration.py# Averages F1 across models per config
+│   ├── svm_c_ablation_study.py       # Tests SVM C values
+│   ├── ablation_results.csv
+│   ├── best_ablation_configuration_results.csv
+│   └── svm_c_ablation_results.csv
+│
+├── reports/                          # Report charts and the scripts that generate them
+│   ├── Image/                        # Generated PNG charts used in the report
+│   └── visualization/                # Matplotlib scripts that generate the charts in Image/
+│
+├── README_tutor_version/             # Minimal install/run guide for the tutor
+│   └── README.md
+│
+├── requirements.txt                  # Pinned dependency versions
 └── README.md
 ```
 
@@ -132,6 +147,23 @@ Clickbait-detection-system/
 | `logistic_regression.pkl` | Saved Logistic Regression model |
 | `svm.pkl` | Saved SVM model |
 | `tfidf_vectorizer.pkl` | Saved TF-IDF vectorizer |
+
+### `exploration/`
+
+Supports the ablation study in the report (Section 4.1). Fits everything in-memory and never touches `models/*.pkl`, so it's safe to re-run without affecting the app.
+
+| File | Description |
+|------|-------------|
+| `tfidf_ablation_study.py` | Trains all 3 models under 18 TF-IDF configs (n-gram range x stop words x max_features); saves `ablation_results.csv`. |
+| `best_ablation_configuration.py` | Averages each config's F1-score across the 3 models to find the overall best shared config; saves `best_ablation_configuration_results.csv`. |
+| `svm_c_ablation_study.py` | Tests SVM at C = 0.01/0.1/1/10/100 with the TF-IDF config fixed; saves `svm_c_ablation_results.csv`. |
+
+### `reports/`
+
+| Path | Description |
+|------|-------------|
+| `reports/Image/` | Generated PNG charts (confusion matrices, ROC curves, influential-words bar charts, word-usage charts) used directly in the report. |
+| `reports/visualization/` | Matplotlib scripts that generate each chart in `reports/Image/`. |
 
 ---
 
