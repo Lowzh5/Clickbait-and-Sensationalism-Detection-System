@@ -84,12 +84,11 @@ st.subheader("3. Analyze")
 analyze_clicked = st.button("🔍 Analyze Headline", type="primary")
 
 
-"""
-Return the original headline with each influential word/phrase wrapped
-in markdown highlighting, matched case-insensitively against the raw text.
-"""
 def highlight_headline(headline: str, words: list[str]) -> str:
-    
+    """
+    Return the original headline with each influential word/phrase wrapped
+    in markdown highlighting, matched case-insensitively against the raw text.
+    """
     if not words:
         return headline
 
@@ -109,13 +108,12 @@ def highlight_headline(headline: str, words: list[str]) -> str:
     )
 
 
-"""
-Horizontal bar chart of each influential word's contribution score.
-Positive = pushed the prediction towards Clickbait, negative = away from it.
-`compact` drops the legend/axis title for the narrow All-Models columns.
-"""
 def build_contribution_chart(words: list[str], scores: list[float], compact: bool = False) -> alt.Chart:
-    
+    """
+    Horizontal bar chart of each influential word's contribution score.
+    Positive = pushed the prediction towards Clickbait, negative = away from it.
+    `compact` drops the legend/axis title for the narrow All-Models columns.
+    """
     df = pd.DataFrame({"word": words, "contribution": scores})
     df["direction"] = df["contribution"].apply(
         lambda v: "Toward Clickbait" if v >= 0 else "Away from Clickbait"
@@ -144,13 +142,12 @@ def build_contribution_chart(words: list[str], scores: list[float], compact: boo
     )
 
 
-"""
-Render the prediction result as cards. `result` follows the shape
-produced by utils.format_result(): model_name, prediction, clickbait_score,
-severity, influential_words, influential_word_scores.
-"""
-def display_result(result: dict, model_name: str, headline: str) -> None:
-
+def display_result(result: dict, headline: str) -> None:
+    """
+    Render the prediction result as cards. `result` follows the shape
+    produced by utils.format_result(): model_name, prediction, clickbait_score,
+    severity, influential_words, influential_word_scores.
+    """
     prediction = result["prediction"]
     score = result["clickbait_score"]
     severity = result["severity"]
@@ -242,4 +239,4 @@ if analyze_clicked:
         predict_fn = MODEL_REGISTRY[selected_model]
         with st.spinner(f"Analyzing headline with {selected_model}..."):
             result = predict_fn(headline)
-        display_result(result, selected_model, headline)
+        display_result(result, headline)
